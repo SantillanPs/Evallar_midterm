@@ -5,11 +5,11 @@ import 'screens/portfolio_screen.dart';
 import 'screens/profile_screen.dart';
 
 void main() {
-  runApp(const StockTrackerApp());
+  runApp(const MyApp());
 }
 
-class StockTrackerApp extends StatelessWidget {
-  const StockTrackerApp({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
