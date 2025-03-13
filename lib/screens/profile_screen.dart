@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final Function toggleTheme;
+  final bool isDarkMode;
+
+  const ProfileScreen({
+    Key? key,
+    required this.toggleTheme,
+    required this.isDarkMode,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -87,12 +97,13 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   _SettingsItem(
                     icon: Icons.dark_mode_outlined,
-                    title: 'Appearance',
+                    title: 'Dark Mode',
                     trailing: Switch(
-                      value: Theme.of(context).brightness == Brightness.dark,
-                      onChanged: (_) {},
+                      value: isDarkMode,
+                      onChanged: (_) => toggleTheme(),
+                      activeColor: colorScheme.primary,
                     ),
-                    onTap: () {},
+                    onTap: () => toggleTheme(),
                   ),
                 ],
               ),
@@ -141,12 +152,31 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Column(
       children: [
-        const CircleAvatar(
-          radius: 50,
-          backgroundImage:
-              NetworkImage('https://randomuser.me/api/portraits/men/32.jpg'),
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: colorScheme.primary.withOpacity(0.5),
+              width: 4,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.primary.withOpacity(0.2),
+                blurRadius: 16,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: const CircleAvatar(
+            radius: 50,
+            backgroundImage:
+                NetworkImage('https://randomuser.me/api/portraits/men/32.jpg'),
+          ),
         ),
         const SizedBox(height: 16),
         const Text(
@@ -157,35 +187,37 @@ class _ProfileHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'alex.johnson@example.com',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.grey,
+            color: colorScheme.onBackground.withOpacity(0.7),
           ),
         ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: () {},
+              icon: const Icon(Icons.edit, size: 18),
+              label: const Text('Edit Profile'),
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: const Text('Edit Profile'),
             ),
             const SizedBox(width: 12),
-            OutlinedButton(
+            OutlinedButton.icon(
               onPressed: () {},
+              icon: const Icon(Icons.verified_user, size: 18),
+              label: const Text('Verify ID'),
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              child: const Text('Verify ID'),
             ),
           ],
         ),
@@ -205,6 +237,9 @@ class _SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -212,10 +247,10 @@ class _SettingsSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: colorScheme.primary,
             ),
           ),
         ),
@@ -224,13 +259,15 @@ class _SettingsSection extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          elevation: 2,
           child: ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: items.length,
-            separatorBuilder: (context, index) => const Divider(
+            separatorBuilder: (context, index) => Divider(
               height: 1,
               indent: 56,
+              color: theme.dividerTheme.color,
             ),
             itemBuilder: (context, index) => items[index],
           ),
@@ -255,10 +292,34 @@ class _SettingsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      trailing: trailing ?? const Icon(Icons.chevron_right),
+      leading: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          color: colorScheme.primary,
+          size: 20,
+        ),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      trailing: trailing ??
+          Icon(
+            Icons.chevron_right,
+            color: colorScheme.onSurface.withOpacity(0.5),
+          ),
       onTap: onTap,
     );
   }
