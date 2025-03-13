@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class ProfileScreen extends StatelessWidget {
   final Function toggleTheme;
   final bool isDarkMode;
+  final VoidCallback? onSignOut;
 
   const ProfileScreen({
     Key? key,
     required this.toggleTheme,
     required this.isDarkMode,
+    this.onSignOut,
   }) : super(key: key);
 
   @override
@@ -131,9 +133,10 @@ class ProfileScreen extends StatelessWidget {
               ),
 
               const SizedBox(height: 24),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
+              TextButton.icon(
+                onPressed: onSignOut,
+                icon: const Icon(Icons.logout, color: Colors.red),
+                label: const Text(
                   'Sign Out',
                   style: TextStyle(color: Colors.red),
                 ),

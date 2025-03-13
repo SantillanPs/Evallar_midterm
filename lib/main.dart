@@ -3,7 +3,9 @@ import 'screens/dashboard_screen.dart';
 import 'screens/markets_screen.dart';
 import 'screens/portfolio_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/login_screen.dart';
 import 'services/theme_service.dart';
+import 'services/auth_service.dart';
 
 void main() {
   runApp(const StockTrackerApp());
@@ -18,18 +20,38 @@ class StockTrackerApp extends StatefulWidget {
 
 class _StockTrackerAppState extends State<StockTrackerApp> {
   final ThemeService _themeService = ThemeService();
+  final AuthService _authService = AuthService();
   bool _isDarkMode = false;
+  bool _isAuthenticated = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadThemeMode();
+    _loadInitialState();
+
+    // Listen for auth state changes
+    _authService.authStateChanges.listen((isAuthenticated) {
+      setState(() {
+        _isAuthenticated = isAuthenticated;
+      });
+    });
   }
 
-  Future<void> _loadThemeMode() async {
+  @override
+  void dispose() {
+    _authService.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadInitialState() async {
     final isDark = await _themeService.isDarkMode();
+    final isAuth = await _authService.isAuthenticated();
+
     setState(() {
       _isDarkMode = isDark;
+      _isAuthenticated = isAuth;
+      _isLoading = false;
     });
   }
 
@@ -47,8 +69,73 @@ class _StockTrackerAppState extends State<StockTrackerApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: MainScreen(toggleTheme: toggleTheme, isDarkMode: _isDarkMode),
+      home: _isLoading
+          ? const _SplashScreen()
+          : _isAuthenticated
+              ? MainScreen(toggleTheme: toggleTheme, isDarkMode: _isDarkMode)
+              : const LoginScreen(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class _SplashScreen extends StatelessWidget {
+  const _SplashScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    colorScheme.primary,
+                    colorScheme.primary.withBlue(
+                      (colorScheme.primary.blue + 40).clamp(0, 255),
+                    ),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.primary.withOpacity(0.3),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.show_chart,
+                size: 50,
+                color: colorScheme.onPrimary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'StockTracker',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onBackground,
+              ),
+            ),
+            const SizedBox(height: 48),
+            CircularProgressIndicator(
+              color: colorScheme.primary,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -69,6 +156,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +167,7 @@ class _MainScreenState extends State<MainScreen> {
       ProfileScreen(
         toggleTheme: widget.toggleTheme,
         isDarkMode: widget.isDarkMode,
+        onSignOut: () => _authService.signOut(),
       ),
     ];
 

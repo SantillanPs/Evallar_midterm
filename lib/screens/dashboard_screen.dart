@@ -22,48 +22,48 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SafeArea(
+      body: const SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Welcome message
-              const Text(
+              Text(
                 'Good morning, Alex',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               // Portfolio summary
-              const PortfolioSummaryCard(),
-              const SizedBox(height: 16),
+              PortfolioSummaryCard(),
+              SizedBox(height: 16),
 
               // Watchlist
-              const Text(
+              Text(
                 'Watchlist',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
-              const WatchlistCard(),
-              const SizedBox(height: 16),
+              SizedBox(height: 8),
+              WatchlistCard(),
+              SizedBox(height: 16),
 
               // Market overview
-              const Text(
+              Text(
                 'Market Overview',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
-              const MarketOverviewCard(),
-              const SizedBox(height: 16),
+              SizedBox(height: 8),
+              MarketOverviewCard(),
+              SizedBox(height: 16),
 
               // Recent transactions
-              const Text(
+              Text(
                 'Recent Transactions',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
-              const RecentTransactionsCard(),
+              SizedBox(height: 8),
+              RecentTransactionsCard(),
             ],
           ),
         ),
